@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Messages | {{room_name}}</title>
+    <!-- load static -->
+    {% load static %}
+    <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+    <!-- link to h=css file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <h3>ChatApp</h3>
+        </div>
+    </div>
+    <div class="parent">
+        <div class="child-2">
+            <center><h2>Chats</h2></center><hr>
+            <div class="chat-body-parent">
+                <div class="chat-body" id="tasks">
+                    <div class="message" id="chatContainer">
+                        <!-- Received messages are displayed here -->
+                        {% for i in messages %}
+                            {% if i.sender != user %}
+                                <div class="receive">
+                                    <p style="color: #000;"> {{i.message}}<strong>-{{i.sender}}</strong></p>
+                                </div>
+                            {% else %}
+                                <div class="send">
+                                    <p style="color: #000;">{{i.message}}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <!-- End of received messages -->
+                    </div>
+
+                    <div class="form">
+                        <form action="" id="message-form" method="POST">
+                            {% csrf_token %}
+                            <textarea id="msg" cols="30" name="message" rows="10" placeholder="Enter your message" required></textarea>
+                            <button class="submit" type="submit">Send</button>
+                        </form>    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToBottom() {
+        var chatContainer = document.getElementById("chatContainer");
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification/{{room_name}}/`;
+    const socket = new WebSocket(wsEndpoint);
+
+    
+    // Successful connection event
+    socket.onopen = (event) => {
+        console.log("WebSocket connection opened!");
+    };
+
+    // Socket disconnect event
+    socket.onclose = (event) => {
+        console.log("WebSocket connection closed!");
+    };
+
+        // Form submit listener
+        document.getElementById('message-form').addEventListener('submit', function(event){
+        event.preventDefault();
+        const message = document.getElementById('msg').value;
+        socket.send(
+            JSON.stringify({
+                'message': message,
+                'room_name': '{{room_name}}',
+                'sender': '{{user}}',
+            })
+        );
+    });
+
+ // Response from consumer on the server
+ socket.addEventListener("message", (event) => {
+        const messageData = JSON.parse(event.data)['message'];
+        console.log(messageData);
+
+        var sender = messageData['sender'];
+        var message = messageData['message'];
+
+        // Empty the message input field after the message has been sent
+        if (sender == '{{user}}'){
+            document.getElementById('msg').value = '';
+        }
+
+        // Append the message to the chatbox
+        var messageDiv = document.querySelector('.message');
+        if (sender != '{{user}}') { // Assuming you have a variable `currentUser` to hold the current user's name
+            messageDiv.innerHTML += '<div class="receive"><p style="color: #000;">' + message + '<strong>-' + sender + '</strong></p></div>';
+        } else {
+            messageDiv.innerHTML += '<div class="send"><p style="color: #000;">' + message + '</p></div>';
+        }
+        scrollToBottom();
+    });
+
+
+</script>
+</script>
+<style>
+
+body {
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+   
+}
+
+/* Navbar styles */
+.navbar {
+    background-color:#74541d;/* Dark background color */
+    color: #fff; /* Text color */
+    padding: 20px 20px; /* Padding around the content */
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space items evenly */
+    align-items: center; /* Center items vertically */
+}
+
+.logo h3 {
+    margin: 0; /* Remove default margin for h3 */
+}
+
+.parent {
+        height: 100vh;
+        display: flex;
+        justify-content: center;       
+        background-position: center; 
+        background-repeat: no-repeat; 
+        background-size: cover; 
+        align-items: center;
+        width: 100%;
+    }
+
+    .child-2 {
+        /* max-height: 100vh; */
+        width: 50%;
+        margin: 10px;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #553b0fdd;
+        color: #fff;
+    }
+
+    .chat-body-parent {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* height: 60vh; */
+    }
+
+    .chat-body, .message {
+       
+        width: 90%;
+        background-color: #d7c8ad;
+        border-radius: 10px;
+        display: flex;      
+        padding: 10px;
+        flex-direction: column;
+    }
+
+    .message {
+        max-height: 400px;  /* Or whatever height value you see fit */
+        overflow-y: auto;
+    }
+
+    .chat-body .message .receive, .send {
+        background-color: #B1A296;
+        max-width: 400px;
+       
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .send:hover {
+        padding: 15px;
+        transition: 0.8s;
+    }
+
+    .receive:hover {
+        padding: 15px;
+        transition: 0.8s;
+    }
+
+    .chat-body .message .send {
+        align-self: flex-end;
+    }
+
+    .chat-body .message .receive {
+        align-self: flex-start;
+    }
+
+    form {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    form textarea {
+        width: 70%;
+        height: 40px;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    form button {
+        width: 25%;
+        padding: 10px;
+        background-color: #553b0fdd;
+        border-radius: 5px;
+        border: none;
+        color: #faf9f9;
+    }
+    @media only screen and (max-width: 600px) {
+    .child-2 {
+        width: 100%;
+    }
+}
+
+</style>
+</html>

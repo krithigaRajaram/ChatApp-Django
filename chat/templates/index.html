@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block title %} Enter{% endblock title %}
+{% block content %}
+
+  <div class="parent">
+        <div class="child">
+            <h1>Enter Chat</h1>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <h3>Hello! {{ username }}</h3>
+                <label for="">Room name</label><br>
+                <input type="text" placeholder="Enter Room name" name="room" required><br>
+                <center><button type="submit">Enter</button></center><br>
+            </form>
+        </div>
+    </div>
+
+    {% endblock content %}

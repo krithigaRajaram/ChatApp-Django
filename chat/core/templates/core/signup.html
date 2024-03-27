@@ -1,0 +1,44 @@
+{% extends 'main.html' %}
+
+{% block title %} Sign-up{% endblock %}
+
+{% block content %}
+<div class="signup_div">
+    <h1 class="signup">Sign-up</h1>
+</div>
+
+<form method="post" action="." class="forms">
+    {% csrf_token %}
+
+    <div class="mb-5">
+        <label class="username_label">Username</label>
+
+        <input type="text" name="username" class="username">
+    </div>
+
+    <div class="mb-5">
+        <label class="password_label">Password</label>
+
+        <input type="password" name="password1" class="password">
+    </div>
+
+    <div class="mb-5">
+        <label class="cnfm_label">Repeat password</label>
+
+        <input type="password" name="password2" class="cnfm">
+    </div>
+    <p>Already having an account? <a href="{% url 'login' %}">login</a></p>
+
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %} 
+                <div class="error">
+                    <p>{{ error|escape }}</p>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+    <button class="signup-button">Submit</button>
+</form>
+{% endblock %}
