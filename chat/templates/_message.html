@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>Messages | {{room_name}}</title>
-    <!-- load static -->
+    
     {% load static %}
-    <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
-    <!-- link to h=css file -->
+   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
@@ -24,7 +23,7 @@
             <div class="chat-body-parent">
                 <div class="chat-body" id="tasks">
                     <div class="message" id="chatContainer">
-                        <!-- Received messages are displayed here -->
+                       
                         {% for i in messages %}
                             {% if i.sender != user %}
                                 <div class="receive">
@@ -36,7 +35,7 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
-                        <!-- End of received messages -->
+                      
                     </div>
 
                     <div class="form">
@@ -62,17 +61,15 @@
     const socket = new WebSocket(wsEndpoint);
 
     
-    // Successful connection event
     socket.onopen = (event) => {
         console.log("WebSocket connection opened!");
     };
 
-    // Socket disconnect event
+    
     socket.onclose = (event) => {
         console.log("WebSocket connection closed!");
     };
 
-        // Form submit listener
         document.getElementById('message-form').addEventListener('submit', function(event){
         event.preventDefault();
         const message = document.getElementById('msg').value;
@@ -85,7 +82,7 @@
         );
     });
 
- // Response from consumer on the server
+
  socket.addEventListener("message", (event) => {
         const messageData = JSON.parse(event.data)['message'];
         console.log(messageData);
@@ -120,18 +117,18 @@ body {
    
 }
 
-/* Navbar styles */
+
 .navbar {
-    background-color:#74541d;/* Dark background color */
-    color: #fff; /* Text color */
-    padding: 20px 20px; /* Padding around the content */
-    display: flex; /* Use flexbox for layout */
-    justify-content: space-between; /* Space items evenly */
-    align-items: center; /* Center items vertically */
+    background-color:#74541d;
+    color: #fff;
+    padding: 20px 20px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
 }
 
 .logo h3 {
-    margin: 0; /* Remove default margin for h3 */
+    margin: 0;
 }
 
 .parent {
@@ -173,7 +170,7 @@ body {
     }
 
     .message {
-        max-height: 400px;  /* Or whatever height value you see fit */
+        max-height: 400px;  
         overflow-y: auto;
     }
 
